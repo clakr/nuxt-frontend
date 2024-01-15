@@ -34,7 +34,6 @@ const form = reactive({
 })
 
 async function handleSubmit(event: Event) {
-
     const { error: cookieError } = await useFetch("/backend/sanctum/csrf-cookie", {
         credentials: "include"
     })
@@ -56,7 +55,5 @@ async function handleSubmit(event: Event) {
     })
 
     if (registerError.value) return console.error(registerError.value)
-
-    router.push("/users")
 }
 </script>
