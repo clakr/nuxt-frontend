@@ -11,6 +11,7 @@
     "clean": "rm -rf .nuxt node_modules pnpm-lock.yaml"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.5.1",
     "nuxt": "^3.9.1",
     "vue": "^3.4.10",
     "vue-router": "^4.2.5"
