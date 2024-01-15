@@ -27,7 +27,7 @@ async function handleSubmit(event: Event) {
         credentials: "include"
     })
 
-    if (cookieError.value) throw createError(cookieError.value)
+    if (cookieError.value) return console.error(cookieError)
 
     const form = event.target as HTMLFormElement
     const formData = new FormData(form)
@@ -43,6 +43,8 @@ async function handleSubmit(event: Event) {
         body
     })
 
-    if (loginError.value) throw createError(loginError.value)
+    if (loginError.value) return console.error(loginError)
+
+    router.push("users")
 }
 </script>

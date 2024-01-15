@@ -38,7 +38,7 @@ async function handleSubmit(event: Event) {
         credentials: "include"
     })
 
-    if (cookieError.value) return console.error(cookieError.value)
+    if (cookieError.value) return console.error(cookieError)
 
     const form = event.target as HTMLFormElement
     const formData = new FormData(form)
@@ -54,6 +54,6 @@ async function handleSubmit(event: Event) {
         body
     })
 
-    if (registerError.value) return console.error(registerError.value)
+    if (registerError.value) return console.error(registerError)
 }
 </script>
