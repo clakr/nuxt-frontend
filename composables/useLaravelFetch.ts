@@ -4,7 +4,12 @@ export function useLaravelFetch<T>(
 	path: string,
 	options: UseFetchOptions<T> = {},
 ) {
-	let headers: Record<string, string> = {};
+	const config = useRuntimeConfig();
+
+	let headers: Record<string, string> = {
+		accept: "application/json",
+		referer: config.public.frontendUrl,
+	};
 
 	const token = useCookie("XSRF-TOKEN");
 	if (token.value) {
@@ -14,7 +19,7 @@ export function useLaravelFetch<T>(
 	if (process.server) {
 		headers = {
 			...headers,
-			...useRequestHeaders(["referer", "cookie"]),
+			...useRequestHeaders(["cookie"]),
 		};
 	}
 

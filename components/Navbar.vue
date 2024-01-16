@@ -1,12 +1,15 @@
 <template>
     <nav>
-        <div>
+        <div v-if="auth.isLoggedIn">
+            <NuxtLink to="/dashboard">dashboard</NuxtLink>
             <NuxtLink to="/users">users</NuxtLink>
         </div>
-        <div>
-            {{ auth.user }}
+        <div v-if="!auth.isLoggedIn">
             <NuxtLink to="/">login</NuxtLink>
             <NuxtLink to="/register">register</NuxtLink>
+        </div>
+        <div v-if="auth.isLoggedIn">
+            {{ auth.user }}
             <button @click="handleLogout">logout</button>
         </div>
     </nav>
@@ -17,6 +20,10 @@ const auth = useAuthStore()
 
 async function handleLogout() {
     await auth.logout()
+
+    navigateTo("/", {
+        replace: true
+    })
 }
 </script>
 

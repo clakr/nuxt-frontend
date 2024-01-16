@@ -24,6 +24,10 @@
 
 <script setup lang="ts">
 
+definePageMeta({
+    middleware: 'guest'
+})
+
 const auth = useAuthStore()
 
 const form = reactive({
@@ -41,5 +45,9 @@ async function handleRegister() {
         password_confirmation: form.password_confirmation
     })
     if (error) return console.error(error)
+
+    navigateTo("/dashboard", {
+        replace: true
+    })
 }
 </script>

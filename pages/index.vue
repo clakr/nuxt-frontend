@@ -15,6 +15,10 @@
 
 <script setup lang="ts">
 
+definePageMeta({
+    middleware: 'guest'
+})
+
 const auth = useAuthStore()
 
 const form = reactive({
@@ -28,5 +32,9 @@ async function handleLogin() {
         password: form.password,
     })
     if (error) return console.error(error)
+
+    navigateTo("/dashboard", {
+        replace: true
+    })
 }
 </script>
