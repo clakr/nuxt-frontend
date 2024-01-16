@@ -27,14 +27,14 @@ async function handleLogout() {
 }
 </script>
 
-<style scoped lang="scss">
+<style scoped>
 nav {
     display: flex;
     justify-content: space-between;
+}
 
-    &>div {
-        display: flex;
-        column-gap: .5rem;
-    }
+div {
+    display: flex;
+    column-gap: .5rem;
 }
 </style>
