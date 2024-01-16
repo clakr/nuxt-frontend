@@ -1,6 +1,5 @@
 <template>
   <h1>users</h1>
-
   <section v-if="status === 'error'">
     <h2>error</h2>
     {{ error }}
@@ -19,9 +18,10 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const { error, status, data, refresh } = await useLazyAsyncData('users', () => $fetch("/laravel/api/users"))
+const { error, status, data, refresh } = await useLaravelFetch<User[]>('/api/users')
 
 async function handleRefresh() {
   await refresh()
 }
+
 </script>

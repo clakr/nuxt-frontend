@@ -1,18 +1,8 @@
-type User = {
-	id: number;
-	name: string;
-	email: string;
-	email_verified_at: null;
-	created_at: Date;
-	updated_at: Date;
-};
-
-type Credentials = {
-	name: string;
-	email: string;
-	password: string;
-	password_confirmation: string;
-};
+import type {
+	User,
+	LoginCredentials,
+	RegisterCredentials,
+} from "~/utils/types";
 
 export const useAuthStore = defineStore("auth", () => {
 	const user = ref<User | null>(null);
@@ -25,7 +15,7 @@ export const useAuthStore = defineStore("auth", () => {
 		return response;
 	}
 
-	async function login(credentials: Pick<Credentials, "email" | "password">) {
+	async function login(credentials: LoginCredentials) {
 		const { error: cookieError } = await useLaravelFetch(
 			"/sanctum/csrf-cookie",
 		);
@@ -41,7 +31,7 @@ export const useAuthStore = defineStore("auth", () => {
 		if (userError.value) return userError.value;
 	}
 
-	async function register(credentials: Credentials) {
+	async function register(credentials: RegisterCredentials) {
 		const { error: cookieError } = await useLaravelFetch(
 			"/sanctum/csrf-cookie",
 		);
