@@ -11,7 +11,7 @@ export function useLaravelFetch<T>(
 		headers["X-XSRF-TOKEN"] = token.value;
 	}
 
-	return useFetch(`/laravel/${path}`, {
+	return useFetch(`/laravel${path}`, {
 		credentials: "include",
 		watch: false,
 		...options,

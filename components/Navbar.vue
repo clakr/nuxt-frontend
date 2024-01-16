@@ -12,14 +12,10 @@
 </template>
 
 <script setup lang="ts">
-const router = useRouter()
+const auth = useAuthStore()
 
 async function handleLogout() {
-    await useLaravelFetch("/logout", {
-        method: 'POST',
-    })
-
-    router.replace("/")
+    await auth.logout()
 }
 </script>
 

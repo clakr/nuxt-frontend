@@ -1,6 +1,6 @@
 <template>
     <h1>register</h1>
-    <form @submit.prevent="handleSubmit">
+    <form @submit.prevent="handleRegister">
         <div>
             <label for="name">name</label>
             <input v-model="form.name" type="text" name="name" id="name">
@@ -20,10 +20,12 @@
         </div>
         <button type="submit">register</button>
     </form>
+    {{ auth.user }}
 </template>
 
 <script setup lang="ts">
 
+const auth = useAuthStore()
 const router = useRouter()
 
 const form = reactive({
@@ -33,22 +35,15 @@ const form = reactive({
     password_confirmation: "password",
 })
 
-async function handleSubmit(event: Event) {
-    const { error: cookieError } = await useLaravelFetch("/sanctum/csrf-cookie", {
-        credentials: "include"
+async function handleRegister() {
+    const error = await auth.register({
+        name: form.name,
+        email: form.email,
+        password: form.password,
+        password_confirmation: form.password_confirmation
     })
-    if (cookieError.value) return console.error(cookieError)
+    if (error) return console.error(error)
 
-    const form = event.target as HTMLFormElement
-    const formData = new FormData(form)
-    const body = Object.fromEntries(formData)
-
-    const { error: registerError } = await useLaravelFetch("/register", {
-        method: "POST",
-        body
-    })
-    if (registerError.value) return console.error(registerError)
-
-    router.replace("/users")
+    // router.replace("/users")
 }
 </script>

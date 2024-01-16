@@ -1,6 +1,6 @@
 <template>
     <h1>login</h1>
-    <form @submit.prevent="handleSubmit">
+    <form @submit.prevent="handleLogin">
         <div>
             <label for="email">email</label>
             <input v-model="form.email" type="text" name="email" id="email">
@@ -11,10 +11,12 @@
         </div>
         <button type="submit">login</button>
     </form>
+    {{ auth.user }}
 </template>
 
 <script setup lang="ts">
 
+const auth = useAuthStore()
 const router = useRouter()
 
 const form = reactive({
@@ -22,20 +24,13 @@ const form = reactive({
     password: "password",
 })
 
-async function handleSubmit(event: Event) {
-    const { error: cookieError } = await useLaravelFetch("/sanctum/csrf-cookie")
-    if (cookieError.value) return console.error(cookieError)
-
-    const form = event.target as HTMLFormElement
-    const formData = new FormData(form)
-    const body = Object.fromEntries(formData)
-
-    const { error: loginError } = await useLaravelFetch("/login", {
-        method: "POST",
-        body
+async function handleLogin() {
+    const error = await auth.login({
+        email: form.email,
+        password: form.password,
     })
-    if (loginError.value) return console.error(loginError)
+    if (error) return console.error(error)
 
-    router.replace("users")
+    // router.replace("/users")
 }
 </script>

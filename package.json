@@ -12,6 +12,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.5.1",
+    "@pinia/nuxt": "^0.5.1",
     "nuxt": "^3.9.1",
     "sass": "^1.69.7",
     "vue": "^3.4.10",
