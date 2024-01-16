@@ -20,13 +20,11 @@
         </div>
         <button type="submit">register</button>
     </form>
-    {{ auth.user }}
 </template>
 
 <script setup lang="ts">
 
 const auth = useAuthStore()
-const router = useRouter()
 
 const form = reactive({
     name: "Clark Tolosa",
@@ -43,7 +41,5 @@ async function handleRegister() {
         password_confirmation: form.password_confirmation
     })
     if (error) return console.error(error)
-
-    // router.replace("/users")
 }
 </script>

@@ -11,13 +11,11 @@
         </div>
         <button type="submit">login</button>
     </form>
-    {{ auth.user }}
 </template>
 
 <script setup lang="ts">
 
 const auth = useAuthStore()
-const router = useRouter()
 
 const form = reactive({
     email: "clarktolosa@gmail.com",
@@ -30,7 +28,5 @@ async function handleLogin() {
         password: form.password,
     })
     if (error) return console.error(error)
-
-    // router.replace("/users")
 }
 </script>

@@ -16,6 +16,7 @@ type Credentials = {
 
 export const useAuthStore = defineStore("auth", () => {
 	const user = ref<User | null>(null);
+	const isLoggedIn = computed(() => !!user.value);
 
 	async function fetchUser() {
 		const response = await useLaravelFetch<User>("/api/user");
@@ -64,5 +65,5 @@ export const useAuthStore = defineStore("auth", () => {
 		user.value = null;
 	}
 
-	return { user, fetchUser, login, register, logout };
+	return { user, isLoggedIn, fetchUser, login, register, logout };
 });

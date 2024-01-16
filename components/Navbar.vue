@@ -4,6 +4,7 @@
             <NuxtLink to="/users">users</NuxtLink>
         </div>
         <div>
+            {{ auth.user }}
             <NuxtLink to="/">login</NuxtLink>
             <NuxtLink to="/register">register</NuxtLink>
             <button @click="handleLogout">logout</button>
