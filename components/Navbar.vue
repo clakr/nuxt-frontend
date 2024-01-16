@@ -6,9 +6,22 @@
         <div>
             <NuxtLink to="/">login</NuxtLink>
             <NuxtLink to="/register">register</NuxtLink>
+            <button @click="handleLogout">logout</button>
         </div>
     </nav>
 </template>
+
+<script setup>
+async function handleLogout() {
+    await useFetch("/backend/logout", {
+        credentials: 'include',
+        method: 'post',
+        headers: {
+            "x-xsrf-token": useCookie("XSRF-TOKEN") || "NO_COOKIE"
+        }
+    })
+}
+</script>
 
 <style scoped lang="scss">
 nav {

@@ -55,5 +55,7 @@ async function handleSubmit(event: Event) {
     })
 
     if (registerError.value) return console.error(registerError)
+
+    router.push("/users")
 }
 </script>
