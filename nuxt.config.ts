@@ -3,7 +3,7 @@ export default defineNuxtConfig({
 	devtools: { enabled: true },
 	nitro: {
 		routeRules: {
-			"/backend/**": {
+			"/laravel/**": {
 				proxy: "http://127.0.0.1:8000/**",
 			},
 		},

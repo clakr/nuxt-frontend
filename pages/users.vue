@@ -10,8 +10,7 @@
 
 <script setup lang="ts">
 
-const { data: user, error } = await useAsyncData('user', () => $fetch("/backend/api/user"))
-
+const { data: user, error } = await useAsyncData('user', () => $fetch("/laravel/api/user"))
 if (error.value) throw createError(error.value)
 
 </script>

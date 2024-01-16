@@ -11,15 +11,15 @@
     </nav>
 </template>
 
-<script setup>
+<script setup lang="ts">
+const router = useRouter()
+
 async function handleLogout() {
-    await useFetch("/backend/logout", {
-        credentials: 'include',
-        method: 'post',
-        headers: {
-            "x-xsrf-token": useCookie("XSRF-TOKEN") || "NO_COOKIE"
-        }
+    await useLaravelFetch("/logout", {
+        method: 'POST',
     })
+
+    router.replace("/")
 }
 </script>
 

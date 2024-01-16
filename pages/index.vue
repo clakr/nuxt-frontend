@@ -23,28 +23,19 @@ const form = reactive({
 })
 
 async function handleSubmit(event: Event) {
-    const { error: cookieError } = await useFetch("/backend/sanctum/csrf-cookie", {
-        credentials: "include"
-    })
-
+    const { error: cookieError } = await useLaravelFetch("/sanctum/csrf-cookie")
     if (cookieError.value) return console.error(cookieError)
 
     const form = event.target as HTMLFormElement
     const formData = new FormData(form)
     const body = Object.fromEntries(formData)
 
-    const { error: loginError } = await useFetch("/backend/login", {
-        credentials: "include",
-        headers: {
-            accept: "application/json",
-            "x-xsrf-token": useCookie("XSRF-TOKEN") || "NO_COOKIE"
-        },
+    const { error: loginError } = await useLaravelFetch("/login", {
         method: "POST",
         body
     })
-
     if (loginError.value) return console.error(loginError)
 
-    router.push("users")
+    router.replace("users")
 }
 </script>
