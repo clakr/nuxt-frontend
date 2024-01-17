@@ -3,14 +3,22 @@
     <h1>users</h1>
     <button @click="handleRefresh" type="button">refresh</button>
   </header>
+
+  <!-- error -->
   <section v-if="status === 'error'">
     <h2>error</h2>
     {{ error }}
   </section>
+
+  <!-- pending -->
   <section v-if="status === 'pending'">
     loading...
   </section>
+
+  <!-- success  -->
   <section v-if="status === 'success'">
+
+    <!-- create user -->
     <form @submit.prevent="handleCreateUser">
       <div>
         <label for="name">name</label>
@@ -22,6 +30,8 @@
       </div>
       <button type="submit">create user</button>
     </form>
+
+    <!-- displaying user -->
     <div>
       <article v-for="user in users">
         {{ user }}
@@ -31,8 +41,6 @@
 </template>
 
 <script setup lang="ts">
-const nuxtApp = useNuxtApp()
-
 definePageMeta({
   middleware: 'auth'
 })
@@ -42,60 +50,19 @@ const form = reactive({
   email: ''
 })
 
-const { error, status, data: users, refresh } = await useLaravelFetch<User[]>('/api/users', {
-  key: 'users',
-  getCachedData(key) {
-    return nuxtApp.static.data[key] || nuxtApp.payload.data[key]
-  },
-})
+const user = useUserStore()
+const { error, status, data: users, refresh } = await user.fetchUsers()
 
 async function handleRefresh() {
   await refresh()
 }
 
 async function handleCreateUser() {
-  await useLaravelFetch('/api/users', {
-    method: 'POST',
-    body: {
-      name: form.name,
-      email: form.email,
-    },
-    onRequest() {
-      if (!users.value) return console.error("No users.value found")
+  await user.createUser(form)
 
-      users.value.push({
-        id: 0,
-        name: form.name,
-        email: form.email,
-        email_verified_at: null,
-        created_at: new Date(),
-        updated_at: new Date()
-      })
-    },
-    onResponse({ response: { _data } }) {
-      if (!users.value) return console.error("No users.value found")
-
-      const user = _data as User
-
-      const createdUserIndex = users.value.findIndex(({ email }) => user.email === email)
-      if (!createdUserIndex) return console.error("No createdUserIndex found")
-
-      users.value[createdUserIndex] = user
-    },
-    onResponseError() {
-      if (!users.value) return console.error("No users.value found")
-
-      const createdUserIndex = users.value.findIndex(({ email }) => form.email === email)
-      if (!createdUserIndex) return console.error("No createdUserIndex found")
-
-      users.value.splice(createdUserIndex, 1)
-    }
-  })
-
-
-
+  form.name = ''
+  form.email = ''
 }
-
 </script>
 
 <style scoped>

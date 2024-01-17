@@ -7,11 +7,11 @@ export type User = {
 	updated_at: Date;
 };
 
-export type RegisterCredentials = {
-	name: string;
-	email: string;
+export type LoginCredentials = Pick<User, "name" | "email">;
+
+export type RegisterCredentials = LoginCredentials & {
 	password: string;
 	password_confirmation: string;
 };
 
-export type LoginCredentials = Pick<RegisterCredentials, "email" | "password">;
+export type CreateUserParameters = LoginCredentials;

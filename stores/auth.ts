@@ -1,9 +1,3 @@
-import type {
-	User,
-	LoginCredentials,
-	RegisterCredentials,
-} from "~/utils/types";
-
 export const useAuthStore = defineStore("auth", () => {
 	const user = ref<User | null>(null);
 	const isLoggedIn = computed(() => !!user.value);
