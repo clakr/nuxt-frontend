@@ -61,7 +61,9 @@ async function handleCreateUser() {
       email: form.email,
     },
     onRequest() {
-      users.value?.push({
+      if (!users.value) return console.error("No users.value found")
+
+      users.value.push({
         id: 0,
         name: form.name,
         email: form.email,
@@ -69,8 +71,29 @@ async function handleCreateUser() {
         created_at: new Date(),
         updated_at: new Date()
       })
+    },
+    onResponse({ response: { _data } }) {
+      if (!users.value) return console.error("No users.value found")
+
+      const user = _data as User
+
+      const createdUserIndex = users.value.findIndex(({ email }) => user.email === email)
+      if (!createdUserIndex) return console.error("No createdUserIndex found")
+
+      users.value[createdUserIndex] = user
+    },
+    onResponseError() {
+      if (!users.value) return console.error("No users.value found")
+
+      const createdUserIndex = users.value.findIndex(({ email }) => form.email === email)
+      if (!createdUserIndex) return console.error("No createdUserIndex found")
+
+      users.value.splice(createdUserIndex, 1)
     }
   })
+
+
+
 }
 
 </script>
