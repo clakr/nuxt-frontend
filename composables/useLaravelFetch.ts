@@ -26,6 +26,7 @@ export function useLaravelFetch<T>(
 	return useFetch(`/laravel${path}`, {
 		credentials: "include",
 		watch: false,
+		lazy: true,
 		...options,
 		headers: {
 			...headers,
