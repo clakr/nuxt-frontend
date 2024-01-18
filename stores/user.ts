@@ -25,6 +25,15 @@ export const useUserStore = defineStore("user", () => {
 		users.value.splice(index, 1);
 	}
 
+	async function retainOldUserData(user: User) {
+		if (!users.value) return console.error("No users.value found");
+
+		const updatedUserIndex = users.value.findIndex(({ id }) => user.id === id);
+		if (!updatedUserIndex) return console.error("No updatedUserIndex found");
+
+		users.value[updatedUserIndex] = user;
+	}
+
 	async function createUser({ name, email }: CreateUserParameters) {
 		await useLaravelFetch("/api/users", {
 			method: "POST",
@@ -72,13 +81,69 @@ export const useUserStore = defineStore("user", () => {
 		});
 	}
 
+	async function updateUser({
+		id,
+		name,
+		email,
+	}: Pick<User, "id" | "name" | "email">) {
+		if (!users.value) return console.error("No users.value found");
+
+		const user = users.value.find((user) => id === user.id);
+		if (!user) return console.error("No user found");
+
+		await useLaravelFetch(`/api/users/${user.id}`, {
+			method: "PUT",
+			body: {
+				name,
+				email,
+			},
+			onRequest() {
+				if (!users.value) return console.error("No users.value found");
+
+				const updatedUserIndex = users.value.findIndex(
+					({ id }) => user.id === id,
+				);
+				if (!updatedUserIndex)
+					return console.error("No updatedUserIndex found");
+
+				users.value[updatedUserIndex] = { ...user, name, email };
+			},
+			onResponse({ response: { _data } }) {
+				if (!users.value) return console.error("No users.value found");
+
+				const user = _data as User;
+
+				const updatedUserIndex = users.value.findIndex(
+					({ id }) => user.id === id,
+				);
+				if (!updatedUserIndex)
+					return console.error("No updatedUserIndex found");
+
+				users.value[updatedUserIndex] = user;
+			},
+			onRequestError() {
+				retainOldUserData(user);
+			},
+			onResponseError() {
+				retainOldUserData(user);
+			},
+		});
+	}
+
 	async function deleteUser(user: User) {
 		await useLaravelFetch(`/api/users/${user.id}`, {
 			method: "DELETE",
 			onRequest() {
-				removeUserFromUsers(
-					users.value?.findIndex(({ email }) => user.email === email),
-				);
+				removeUserFromUsers(users.value?.findIndex(({ id }) => user.id === id));
+			},
+			onResponse() {
+				// no possible "rehydration" of data since it's already deleted
+				// instead, do something client-side e.g. display toast
+			},
+			onRequestError() {
+				if (!users.value) return console.error("No users.value found");
+
+				users.value.push(user);
 			},
 			onResponseError() {
 				if (!users.value) return console.error("No users.value found");
@@ -88,5 +153,5 @@ export const useUserStore = defineStore("user", () => {
 		});
 	}
 
-	return { users, fetchUsers, createUser, deleteUser };
+	return { users, fetchUsers, createUser, updateUser, deleteUser };
 });

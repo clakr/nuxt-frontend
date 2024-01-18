@@ -16,7 +16,7 @@
   <section v-if="status === 'success'">
 
     <!-- create user -->
-    <form @submit.prevent="handleCreateUser">
+    <form v-if="formState === 'create'" @submit.prevent="handleCreateUser">
       <div>
         <label for="name">name</label>
         <input v-model="form.name" type="text" name="name" id="name">
@@ -26,6 +26,20 @@
         <input v-model="form.email" type="email" name="email" id="email">
       </div>
       <button type="submit">create user</button>
+    </form>
+
+    <!-- update user -->
+    <form v-if="formState === 'update'" @submit.prevent="handleUpdateUser">
+      <input v-model="form.id" type="hidden" name="id">
+      <div>
+        <label for="name">name</label>
+        <input v-model="form.name" type="text" name="name" id="name">
+      </div>
+      <div>
+        <label for="email">email</label>
+        <input v-model="form.email" type="email" name="email" id="email">
+      </div>
+      <button type="submit">update user</button>
     </form>
 
     <!-- displaying user -->
@@ -50,8 +64,8 @@
           <td>{{ user.created_at }}</td>
           <td>{{ user.updated_at }}</td>
           <td>
-            <div>
-              <button type="button">edit</button>
+            <div v-if="!isLoggedInUser(user)">
+              <button type="button" @click="handleUpdateForm(user)">edit</button>
               <button type="button" @click="handleDeleteUser(user)">delete</button>
             </div>
           </td>
@@ -66,14 +80,18 @@ definePageMeta({
   middleware: 'auth'
 })
 
+const auth = useAuthStore()
+const user = useUserStore()
+
+const { error, status, data: users } = await user.fetchUsers()
+const sortedUsers = computed(() => users.value?.toSorted((a, b) => a.id - b.id))
+
 const form = reactive({
+  id: 0,
   name: '',
   email: ''
 })
-
-const user = useUserStore()
-const { error, status, data: users } = await user.fetchUsers()
-const sortedUsers = computed(() => users.value?.toSorted((a, b) => a.id - b.id))
+const formState = ref<'create' | 'update'>('create')
 
 async function handleCreateUser() {
   await user.createUser(form)
@@ -82,8 +100,28 @@ async function handleCreateUser() {
   form.email = ''
 }
 
+function handleUpdateForm(user: User) {
+  formState.value = 'update'
+
+  form.id = user.id
+  form.name = user.name
+  form.email = user.email
+}
+
+async function handleUpdateUser() {
+  await user.updateUser(form)
+
+  formState.value = 'create'
+  form.name = ''
+  form.email = ''
+}
+
 async function handleDeleteUser(deletedUser: User) {
   await user.deleteUser(deletedUser)
+}
+
+function isLoggedInUser({ id }: Pick<User, 'id'>) {
+  return auth.user?.id === id
 }
 </script>
 
