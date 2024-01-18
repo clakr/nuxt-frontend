@@ -10,7 +10,7 @@
         </div>
         <div v-if="auth.isLoggedIn">
             {{ auth.user }}
-            <button @click="handleLogout">logout</button>
+            <button type="button" @click="handleLogout">logout</button>
         </div>
     </nav>
 </template>

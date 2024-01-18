@@ -1,4 +1,4 @@
-import type { CreateUserParameters } from "~/utils/types";
+import type { CreateUserParameters, User } from "~/utils/types";
 
 export const useUserStore = defineStore("user", () => {
 	const nuxtApp = useNuxtApp();
@@ -18,17 +18,11 @@ export const useUserStore = defineStore("user", () => {
 		return response;
 	}
 
-	async function removeAppendedUser({
-		email,
-	}: Pick<CreateUserParameters, "email">) {
+	async function removeUserFromUsers(index: number | undefined) {
+		if (!index) return console.error("No index found");
 		if (!users.value) return console.error("No users.value found");
 
-		const createdUserIndex = users.value.findLastIndex(
-			(user) => email === user.email,
-		);
-		if (createdUserIndex < 0) return console.error("No createdUserIndex found");
-
-		users.value.splice(createdUserIndex, 1);
+		users.value.splice(index, 1);
 	}
 
 	async function createUser({ name, email }: CreateUserParameters) {
@@ -66,13 +60,33 @@ export const useUserStore = defineStore("user", () => {
 				users.value[createdUserIndex] = user;
 			},
 			onRequestError() {
-				removeAppendedUser({ email });
+				removeUserFromUsers(
+					users.value?.findLastIndex((user) => email === user.email),
+				);
 			},
 			onResponseError() {
-				removeAppendedUser({ email });
+				removeUserFromUsers(
+					users.value?.findLastIndex((user) => email === user.email),
+				);
 			},
 		});
 	}
 
-	return { users, fetchUsers, createUser };
+	async function deleteUser(user: User) {
+		await useLaravelFetch(`/api/users/${user.id}`, {
+			method: "DELETE",
+			onRequest() {
+				removeUserFromUsers(
+					users.value?.findIndex(({ email }) => user.email === email),
+				);
+			},
+			onResponseError() {
+				if (!users.value) return console.error("No users.value found");
+
+				users.value.push(user);
+			},
+		});
+	}
+
+	return { users, fetchUsers, createUser, deleteUser };
 });

@@ -1,8 +1,5 @@
 <template>
-  <header>
-    <h1>users</h1>
-    <button @click="handleRefresh" type="button">refresh</button>
-  </header>
+  <h1>users</h1>
 
   <!-- error -->
   <section v-if="status === 'error'">
@@ -32,14 +29,38 @@
     </form>
 
     <!-- displaying user -->
-    <div>
-      <article v-for="user in users">
-        {{ user }}
-      </article>
-    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>name</th>
+          <th>email</th>
+          <th>email_verified_at</th>
+          <th>created_at</th>
+          <th>updated_at</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="user in sortedUsers">
+          <td>{{ user.id }}</td>
+          <td>{{ user.name }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.email_verified_at }}</td>
+          <td>{{ user.created_at }}</td>
+          <td>{{ user.updated_at }}</td>
+          <td>
+            <div>
+              <button type="button">edit</button>
+              <button type="button" @click="handleDeleteUser(user)">delete</button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </section>
 </template>
-
+                       
 <script setup lang="ts">
 definePageMeta({
   middleware: 'auth'
@@ -51,11 +72,8 @@ const form = reactive({
 })
 
 const user = useUserStore()
-const { error, status, data: users, refresh } = await user.fetchUsers()
-
-async function handleRefresh() {
-  await refresh()
-}
+const { error, status, data: users } = await user.fetchUsers()
+const sortedUsers = computed(() => users.value?.toSorted((a, b) => a.id - b.id))
 
 async function handleCreateUser() {
   await user.createUser(form)
@@ -63,18 +81,25 @@ async function handleCreateUser() {
   form.name = ''
   form.email = ''
 }
+
+async function handleDeleteUser(deletedUser: User) {
+  await user.deleteUser(deletedUser)
+}
 </script>
 
 <style scoped>
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
 section:last-of-type {
   display: flex;
   flex-direction: column;
   row-gap: 1rem;
+}
+
+td {
+  text-align: center;
+}
+
+td div {
+  display: flex;
+  column-gap: .5rem;
 }
 </style>
