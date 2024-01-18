@@ -18,20 +18,28 @@ export const useUserStore = defineStore("user", () => {
 		return response;
 	}
 
-	async function removeUserFromUsers(index: number | undefined) {
+	async function removeUser(index: number | undefined) {
 		if (!index) return console.error("No index found");
 		if (!users.value) return console.error("No users.value found");
 
 		users.value.splice(index, 1);
 	}
 
-	async function retainUserData(user: User) {
+	function retainUser(user: User) {
 		if (!users.value) return console.error("No users.value found");
 
 		const updatedUserIndex = users.value.findIndex(({ id }) => user.id === id);
 		if (!updatedUserIndex) return console.error("No updatedUserIndex found");
 
 		users.value[updatedUserIndex] = user;
+	}
+
+	function replaceUser(index: number | undefined, user: User) {
+		if (index === undefined || index < 0)
+			return console.error("No index found");
+		if (!users.value) return console.error("No users.value found");
+
+		users.value[index] = user;
 	}
 
 	async function createUser({ name, email }: CreateUserParameters) {
@@ -51,34 +59,21 @@ export const useUserStore = defineStore("user", () => {
 					name,
 					email,
 					email_verified_at: null,
-					created_at: new Date(),
-					updated_at: new Date(),
+					created_at: new Date().toISOString(),
+					updated_at: new Date().toISOString(),
 				});
 			},
-
-			// todo: refactor this (id: 1)
-			onResponse({ response: { _data } }) {
-				if (!users.value) return console.error("No users.value found");
-
-				const user = _data as User;
-
-				const createdUserIndex = users.value.findIndex(
-					({ email }) => user.email === email,
+			onResponse({ response: { _data: user } }) {
+				replaceUser(
+					users.value?.findIndex(({ email }) => user.email === email),
+					user,
 				);
-				if (createdUserIndex < 0)
-					return console.error("No createdUserIndex found");
-
-				users.value[createdUserIndex] = user;
 			},
 			onRequestError() {
-				removeUserFromUsers(
-					users.value?.findLastIndex((user) => email === user.email),
-				);
+				removeUser(users.value?.findLastIndex((user) => email === user.email));
 			},
 			onResponseError() {
-				removeUserFromUsers(
-					users.value?.findLastIndex((user) => email === user.email),
-				);
+				removeUser(users.value?.findLastIndex((user) => email === user.email));
 			},
 		});
 	}
@@ -100,38 +95,28 @@ export const useUserStore = defineStore("user", () => {
 				email,
 			},
 
-			// todo: refactor this (id: 1)
 			onRequest() {
-				if (!users.value) return console.error("No users.value found");
-
-				const updatedUserIndex = users.value.findIndex(
-					({ id }) => user.id === id,
+				replaceUser(
+					users.value?.findIndex(({ id }) => user.id === id),
+					{
+						...user,
+						name,
+						email,
+					},
 				);
-				if (!updatedUserIndex)
-					return console.error("No updatedUserIndex found");
-
-				users.value[updatedUserIndex] = { ...user, name, email };
 			},
 
-			// todo: refactor this (id: 1)
-			onResponse({ response: { _data } }) {
-				if (!users.value) return console.error("No users.value found");
-
-				const user = _data as User;
-
-				const updatedUserIndex = users.value.findIndex(
-					({ id }) => user.id === id,
+			onResponse({ response: { _data: user } }) {
+				replaceUser(
+					users.value?.findIndex(({ id }) => user.id === id),
+					user,
 				);
-				if (!updatedUserIndex)
-					return console.error("No updatedUserIndex found");
-
-				users.value[updatedUserIndex] = user;
 			},
 			onRequestError() {
-				retainUserData(user);
+				retainUser(user);
 			},
 			onResponseError() {
-				retainUserData(user);
+				retainUser(user);
 			},
 		});
 	}
@@ -140,7 +125,7 @@ export const useUserStore = defineStore("user", () => {
 		await useLaravelFetch(`/api/users/${user.id}`, {
 			method: "DELETE",
 			onRequest() {
-				removeUserFromUsers(users.value?.findIndex(({ id }) => user.id === id));
+				removeUser(users.value?.findIndex(({ id }) => user.id === id));
 			},
 			onResponse() {
 				// no possible "hydration" of data since it's already deleted
