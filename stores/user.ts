@@ -25,7 +25,7 @@ export const useUserStore = defineStore("user", () => {
 		users.value.splice(index, 1);
 	}
 
-	async function retainOldUserData(user: User) {
+	async function retainUserData(user: User) {
 		if (!users.value) return console.error("No users.value found");
 
 		const updatedUserIndex = users.value.findIndex(({ id }) => user.id === id);
@@ -55,6 +55,8 @@ export const useUserStore = defineStore("user", () => {
 					updated_at: new Date(),
 				});
 			},
+
+			// todo: refactor this (id: 1)
 			onResponse({ response: { _data } }) {
 				if (!users.value) return console.error("No users.value found");
 
@@ -97,6 +99,8 @@ export const useUserStore = defineStore("user", () => {
 				name,
 				email,
 			},
+
+			// todo: refactor this (id: 1)
 			onRequest() {
 				if (!users.value) return console.error("No users.value found");
 
@@ -108,6 +112,8 @@ export const useUserStore = defineStore("user", () => {
 
 				users.value[updatedUserIndex] = { ...user, name, email };
 			},
+
+			// todo: refactor this (id: 1)
 			onResponse({ response: { _data } }) {
 				if (!users.value) return console.error("No users.value found");
 
@@ -122,10 +128,10 @@ export const useUserStore = defineStore("user", () => {
 				users.value[updatedUserIndex] = user;
 			},
 			onRequestError() {
-				retainOldUserData(user);
+				retainUserData(user);
 			},
 			onResponseError() {
-				retainOldUserData(user);
+				retainUserData(user);
 			},
 		});
 	}
@@ -137,7 +143,7 @@ export const useUserStore = defineStore("user", () => {
 				removeUserFromUsers(users.value?.findIndex(({ id }) => user.id === id));
 			},
 			onResponse() {
-				// no possible "rehydration" of data since it's already deleted
+				// no possible "hydration" of data since it's already deleted
 				// instead, do something client-side e.g. display toast
 			},
 			onRequestError() {
