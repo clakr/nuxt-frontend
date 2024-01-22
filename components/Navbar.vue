@@ -20,9 +20,10 @@ const auth = useAuthStore()
 
 async function handleLogout() {
     await auth.logout()
+    clearNuxtData()
 
     navigateTo("/", {
-        replace: true
+        replace: true,
     })
 }
 </script>

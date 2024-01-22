@@ -8,9 +8,8 @@ export const useUserStore = defineStore("user", () => {
 	async function fetchUsers() {
 		const response = await useLaravelFetch<User[]>("/api/users", {
 			key: "users",
-			getCachedData(key) {
-				return nuxtApp.static.data[key] || nuxtApp.payload.data[key];
-			},
+			getCachedData: (key) =>
+				nuxtApp.static.data[key] || nuxtApp.payload.data[key],
 		});
 
 		users.value = response.data.value;
@@ -59,8 +58,8 @@ export const useUserStore = defineStore("user", () => {
 					name,
 					email,
 					email_verified_at: null,
-					created_at: new Date().toISOString(),
-					updated_at: new Date().toISOString(),
+					created_at: new Date(),
+					updated_at: new Date(),
 				});
 			},
 			onResponse({ response: { _data: user } }) {

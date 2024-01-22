@@ -56,7 +56,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="user in sortedUsers">
+        <tr v-for="user in sortedUsers" :key="user.id">
           <td>{{ user.id }}</td>
           <td>{{ user.name }}</td>
           <td>{{ user.email }}</td>
