@@ -49,9 +49,9 @@
           <th>id</th>
           <th>name</th>
           <th>email</th>
-          <th>email_verified_at</th>
-          <th>created_at</th>
-          <th>updated_at</th>
+          <th>emailVerifiedAt</th>
+          <th>createdAt</th>
+          <th>updatedAt</th>
           <th></th>
         </tr>
       </thead>
@@ -60,9 +60,9 @@
           <td>{{ user.id }}</td>
           <td>{{ user.name }}</td>
           <td>{{ user.email }}</td>
-          <td>{{ user.email_verified_at }}</td>
-          <td>{{ user.created_at }}</td>
-          <td>{{ user.updated_at }}</td>
+          <td>{{ user.emailVerifiedAt }}</td>
+          <td>{{ user.createdAt }}</td>
+          <td>{{ user.updatedAt }}</td>
           <td>
             <div v-if="!isLoggedInUser(user)">
               <button type="button" @click="handleUpdateForm(user)">edit</button>
@@ -122,6 +122,10 @@ async function handleDeleteUser(deletedUser: User) {
 
 function isLoggedInUser({ id }: Pick<User, 'id'>) {
   return auth.user?.id === id
+}
+
+function getViewUserRoute({ id }: Pick<User, 'id'>) {
+  return `/users/${id}`
 }
 </script>
 

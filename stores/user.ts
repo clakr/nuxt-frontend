@@ -1,16 +1,10 @@
 import type { CreateUserParameters, User } from "~/utils/types";
 
 export const useUserStore = defineStore("user", () => {
-	const nuxtApp = useNuxtApp();
-
 	const users = ref<User[] | null>(null);
 
 	async function fetchUsers() {
-		const response = await useLaravelFetch<User[]>("/api/users", {
-			key: "users",
-			getCachedData: (key) =>
-				nuxtApp.static.data[key] || nuxtApp.payload.data[key],
-		});
+		const response = await useLaravelFetch<User[]>("/api/users");
 
 		users.value = response.data.value;
 
@@ -57,9 +51,9 @@ export const useUserStore = defineStore("user", () => {
 					id: 0,
 					name,
 					email,
-					email_verified_at: null,
-					created_at: new Date(),
-					updated_at: new Date(),
+					emailVerifiedAt: null,
+					createdAt: new Date(),
+					updatedAt: new Date(),
 				});
 			},
 			onResponse({ response: { _data: user } }) {

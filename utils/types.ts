@@ -2,9 +2,9 @@ export type User = {
 	id: number;
 	name: string;
 	email: string;
-	email_verified_at: Date | null;
-	created_at: Date;
-	updated_at: Date;
+	emailVerifiedAt: Date | null;
+	createdAt: Date;
+	updatedAt: Date;
 };
 
 export type LoginCredentials = Pick<User, "name" | "email">;

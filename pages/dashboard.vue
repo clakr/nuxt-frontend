@@ -22,9 +22,9 @@
           <th>id</th>
           <th>name</th>
           <th>email</th>
-          <th>email_verified_at</th>
-          <th>created_at</th>
-          <th>updated_at</th>
+          <th>emailVerifiedAt</th>
+          <th>createdAt</th>
+          <th>updatedAt</th>
         </tr>
       </thead>
       <tbody>
@@ -32,9 +32,9 @@
           <td>{{ user.id }}</td>
           <td>{{ user.name }}</td>
           <td>{{ user.email }}</td>
-          <td>{{ user.email_verified_at }}</td>
-          <td>{{ user.created_at }}</td>
-          <td>{{ user.updated_at }}</td>
+          <td>{{ user.emailVerifiedAt }}</td>
+          <td>{{ user.createdAt }}</td>
+          <td>{{ user.updatedAt }}</td>
         </tr>
       </tbody>
     </table>
